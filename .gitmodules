@@ -1,0 +1,3 @@
+[submodule "wholemusic-core"]
+	path = wholemusic-core
+	url = https://gitee.com/egg90/WholeMusic.git
