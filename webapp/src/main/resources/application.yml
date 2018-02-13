@@ -3,11 +3,11 @@ spring:
   profiles:
     active: dev
 ### 配置数据库的连接方式
-  datasource:
-    driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:springboot.db
-    username:
-    password:
+#  datasource:
+#    driver-class-name: org.sqlite.JDBC
+#    url: "jdbc:sqlite:app.db"
+#    username:
+#    password:
 ### sqlite需要自己配置连接方式
   jpa:
     database-platform: com.enigmabridge.hibernate.dialect.SQLiteDialect
