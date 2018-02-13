@@ -1,4 +1,4 @@
-package wholemusic.web;
+package wholemusic.web.component;
 
 import org.springframework.stereotype.Component;
 import wholemusic.core.Main;

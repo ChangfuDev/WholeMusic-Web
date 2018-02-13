@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Created by haohua on 2018/2/13.
  */
 @SpringBootApplication
-public class Application {
+public class WholeMusicWebApp {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(WholeMusicWebApp.class, args);
     }
 }
