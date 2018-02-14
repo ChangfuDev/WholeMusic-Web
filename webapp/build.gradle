@@ -27,4 +27,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/commons-io/commons-io
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    // https://mvnrepository.com/artifact/com.belerweb/social-sdk
+    compile group: 'com.belerweb', name: 'social-sdk', version: '0.0.5'
+
 }

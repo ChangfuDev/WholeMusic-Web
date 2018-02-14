@@ -1,5 +1,9 @@
 package wholemusic.web.util;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.HashMap;
+
 public class CommonUtils {
     public static String humanReadableByteCount(long bytes, boolean si) {
         int unit = si ? 1000 : 1024;
@@ -11,5 +15,20 @@ public class CommonUtils {
 
     public static String humanReadableByteCount(long bytes) {
         return humanReadableByteCount(bytes, false);
+    }
+
+    public static HashMap<String, Object> getRequestInfoMap(HttpServletRequest request) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("host", "" + request.getRemoteHost());
+        map.put("localAddress", "" + request.getLocalAddr());
+        map.put("remoteAddress", "" + request.getRemoteAddr());
+        HashMap<String, String> headers = new HashMap<>();
+        Enumeration<String> names = request.getHeaderNames();
+        while (names.hasMoreElements()) {
+            final String name = names.nextElement();
+            headers.put(name, request.getHeader(name));
+        }
+        map.put("headers", headers);
+        return map;
     }
 }

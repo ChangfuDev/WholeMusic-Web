@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity
+@SuppressWarnings("unused")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
