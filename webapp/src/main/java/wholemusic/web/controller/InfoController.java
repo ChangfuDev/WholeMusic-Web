@@ -1,15 +1,17 @@
 package wholemusic.web.controller;
 
-import com.belerweb.social.weibo.api.Weibo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wholemusic.web.config.Constants;
 import wholemusic.web.util.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Created by haohua on 2018/2/13.
@@ -17,15 +19,26 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/info")
 @SuppressWarnings("unused")
-public class InfoController {
-    @GetMapping()
+public class InfoController extends ControllerWithSession {
+    @GetMapping
     public HashMap<String, Object> index(HttpServletRequest request) {
-        Weibo weibo = new Weibo(Constants.WEIBO_CLIENT_ID, Constants.WEIBO_CLIENT_SECRET, Constants.WEIBO_CALLBACK);
         HashMap<String, Object> map = new HashMap<>();
         map.put("disk", getDiskUsageInfoMap());
         map.put("runtime", getRuntimeInfoMap());
         map.put("request", CommonUtils.getRequestInfoMap(request));
-        map.put("auth", weibo.getOAuth2().authorize());
+        if (isRequestedByLocalHost(request)) {
+            map.put("session_info", getSessionInfo(session));
+        }
+        return map;
+    }
+
+    private static HashMap<String, Object> getSessionInfo(HttpSession session) {
+        HashMap<String, Object> map = new HashMap<>();
+        Enumeration<String> names = session.getAttributeNames();
+        while (names.hasMoreElements()) {
+            final String name = names.nextElement();
+            map.put(name, session.getAttribute(name));
+        }
         return map;
     }
 
@@ -46,5 +59,11 @@ public class InfoController {
         map.put("free_space", CommonUtils.humanReadableByteCount(dir.getFreeSpace()));
         map.put("usable_space", CommonUtils.humanReadableByteCount(dir.getUsableSpace()));
         return map;
+    }
+
+    private static boolean isRequestedByLocalHost(HttpServletRequest request) {
+        String host = request.getHeader("host");
+        return Objects.equals(request.getRemoteAddr(), request.getLocalAddr())
+                && host != null && host.contains("localhost");
     }
 }

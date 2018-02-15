@@ -2,15 +2,15 @@ package wholemusic.web.config;
 
 public class Constants {
     @SuppressWarnings("SpellCheckingInspection")
-    public static final String WEIBO_CLIENT_ID = getOAuthConsts("WEIBO_CLIENT_ID");
+    public static final String WEIBO_CLIENT_ID = getOAuthConst("WEIBO_CLIENT_ID");
 
     @SuppressWarnings("SpellCheckingInspection")
-    public static final String WEIBO_CLIENT_SECRET = getOAuthConsts("WEIBO_CLIENT_SECRET");
+    public static final String WEIBO_CLIENT_SECRET = getOAuthConst("WEIBO_CLIENT_SECRET");
 
     @SuppressWarnings("SpellCheckingInspection")
-    public static final String WEIBO_CALLBACK = getOAuthConsts("WEIBO_CALLBACK");
+    public static final String WEIBO_CALLBACK = getOAuthConst("WEIBO_CALLBACK");
 
-    private static String getOAuthConsts(String field) {
+    private static String getOAuthConst(String field) {
         return getConst(getSamePackageClassName("OAuthConst"), field);
     }
 
