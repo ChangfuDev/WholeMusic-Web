@@ -1,6 +1,5 @@
 package wholemusic.web.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * Created by haohua on 2018/2/13.
@@ -26,7 +24,7 @@ public class InfoController extends ControllerWithSession {
         map.put("disk", getDiskUsageInfoMap());
         map.put("runtime", getRuntimeInfoMap());
         map.put("request", CommonUtils.getRequestInfoMap(request));
-        if (isRequestedByLocalHost(request)) {
+        if (CommonUtils.isRequestedByLocalHost(request)) {
             map.put("session_info", getSessionInfo(session));
         }
         return map;
@@ -61,9 +59,4 @@ public class InfoController extends ControllerWithSession {
         return map;
     }
 
-    private static boolean isRequestedByLocalHost(HttpServletRequest request) {
-        String host = request.getHeader("host");
-        return Objects.equals(request.getRemoteAddr(), request.getLocalAddr())
-                && host != null && host.contains("localhost");
-    }
 }

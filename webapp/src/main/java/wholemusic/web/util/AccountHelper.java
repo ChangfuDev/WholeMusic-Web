@@ -32,10 +32,10 @@ public class AccountHelper {
     }
 
     @SuppressWarnings("SpellCheckingInspection")
-    public static void onWeiboLoggedOn(HttpSession session, AccessToken token) {
+    public static void onWeiboLoggedOn(HttpSession session, String accessToken, String uid) {
         WeiboAuthInfo auth = new WeiboAuthInfo();
-        auth.accessToken = token.getToken();
-        auth.uid = token.getUid();
+        auth.accessToken = accessToken;
+        auth.uid =  uid;
         session.setAttribute(SessionKey.WEIBO_AUTH_INFO, auth);
     }
 }

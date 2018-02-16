@@ -6,6 +6,7 @@
 </head>
 <body>
 Hello Spring Boot WebApp!
-<p>已登录!</p>
+<p th:inline="text">欢迎微博用户[[${uid}]]</p>
+<p><a href="/logout">退出登录</a></p>
 </body>
 </html>

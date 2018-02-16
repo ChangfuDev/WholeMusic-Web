@@ -3,6 +3,7 @@ package wholemusic.web.util;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class CommonUtils {
     public static String humanReadableByteCount(long bytes, boolean si) {
@@ -30,5 +31,11 @@ public class CommonUtils {
         }
         map.put("headers", headers);
         return map;
+    }
+
+    public static boolean isRequestedByLocalHost(HttpServletRequest request) {
+        String host = request.getHeader("host");
+        return Objects.equals(request.getRemoteAddr(), request.getLocalAddr())
+                && host != null && host.contains("localhost");
     }
 }

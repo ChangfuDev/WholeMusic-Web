@@ -6,6 +6,6 @@
 </head>
 <body>
 Hello Spring Boot WebApp!
-<p><a th:href="${login_link}">微博登录</a></p>
+<p><a th:href="${login_link}" th:inline="text">[[${link_text}]]</a></p>
 </body>
 </html>
