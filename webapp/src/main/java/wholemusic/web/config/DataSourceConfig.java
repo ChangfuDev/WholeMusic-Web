@@ -1,10 +1,10 @@
 package wholemusic.web.config;
 
-import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import wholemusic.web.util.FileUtils;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -23,10 +23,8 @@ public class DataSourceConfig {
         return dataSourceBuilder.build();
     }
 
-    private File getDatabaseFile() {
-        ApplicationHome home = new ApplicationHome(getClass());
-        // The path is like: /var/lib/tomcat8/webapps/
-        File file = new File(home.getDir().getParentFile().getParentFile().getParentFile(), "app.db");
+    private static File getDatabaseFile() {
+        File file = new File(FileUtils.getRootDirectory(), "app.db");
         return file;
     }
 }
