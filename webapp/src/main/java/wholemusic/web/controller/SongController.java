@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import wholemusic.core.api.MusicApi;
 import wholemusic.core.api.MusicApiFactory;
 import wholemusic.core.api.MusicProvider;
+import wholemusic.core.api.NotFullyImplementedMusicApi;
+import wholemusic.core.model.MusicLink;
 import wholemusic.core.model.Song;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,9 +25,34 @@ import java.util.List;
 public class SongController {
     @GetMapping("/search")
     public String search(@RequestParam("query") String query, ModelMap map) throws IOException {
-        MusicApi api = MusicApiFactory.create(MusicProvider.Neteast);
-        List<? extends Song> result = api.searchMusicSync(query, 0);
+        ArrayList<Song> result = new ArrayList<>();
+        MusicProvider[] providers = MusicProvider.values();
+        for (MusicProvider provider : providers) {
+            MusicApi api = MusicApiFactory.create(provider);
+            if (api != null && !(api instanceof NotFullyImplementedMusicApi)) {
+                List<? extends Song> songs = api.searchMusicSync(query, 0, true);
+                result.addAll(songs);
+            }
+        }
         map.addAttribute("songs", result);
         return "song/search";
+    }
+
+    /**
+     * TODO
+     *
+     * @param musicId
+     * @param provider
+     * @param map
+     * @return
+     * @throws IOException
+     */
+    @GetMapping("/play")
+    public String play(@RequestParam("id") String musicId, @RequestParam("provider") String provider, ModelMap map)
+            throws IOException {
+        MusicProvider musicProvider = MusicProvider.valueOf(provider);
+        MusicApi api = MusicApiFactory.create(musicProvider);
+        MusicLink link = api.getMusicLinkByIdSync(musicId);
+        return "song/play";
     }
 }

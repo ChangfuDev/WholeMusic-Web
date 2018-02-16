@@ -9,8 +9,9 @@
         <!--<span th:text="${itemStat.index}"></span>-->
         歌曲: <span th:text="${song.getName()}"></span>
         歌手: <span th:text="${song.getArtists().get(0).name}"></span>
-        专辑: <span th:text="${song.getAlbum().getName()}"></span>
-        来源: <span th:text="${song.getMusicProvider()}"></span>
+        专辑: <span th:text="${song.getAlbum()?.getName()}"></span>
+        来源: <span th:text="${song.getMusicProvider()?.toString()}"></span>
+        <a th:href="${song.getMusicLink()?.getUrl()}" target="_blank">播放</a>
     </li>
 </ol>
 
