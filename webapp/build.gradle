@@ -29,8 +29,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.session/spring-session-data-redis
     compile group: 'org.springframework.session', name: 'spring-session-data-redis', version: '2.0.1.RELEASE'
 
-    compile 'org.springframework.session:spring-session-core'
-
     compile project(":wholemusic-core")
 
     // https://mvnrepository.com/artifact/commons-io/commons-io

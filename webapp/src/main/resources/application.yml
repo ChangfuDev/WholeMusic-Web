@@ -1,5 +1,7 @@
 ### 配置实用哪种模式
 spring:
+  thymeleaf:
+    cache: false
   profiles:
     active: dev
 ### 配置数据库的连接方式

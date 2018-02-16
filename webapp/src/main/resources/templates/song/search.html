@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<h1>歌曲搜索结果</h1>
+
+<ol>
+    <li th:each="song,itemStat:${songs}">
+        <!--<span th:text="${itemStat.index}"></span>-->
+        歌曲: <span th:text="${song.getName()}"></span>
+        歌手: <span th:text="${song.getArtists().get(0).name}"></span>
+        专辑: <span th:text="${song.getAlbum().getName()}"></span>
+        来源: <span th:text="${song.getMusicProvider()}"></span>
+    </li>
+</ol>
+
+</body>
+</html>

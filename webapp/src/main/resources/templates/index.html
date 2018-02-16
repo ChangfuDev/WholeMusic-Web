@@ -5,8 +5,15 @@
     <title>超级曲库</title>
 </head>
 <body>
-Hello Spring Boot WebApp!
-<p th:inline="text">欢迎微博用户[[${uid}]]</p>
+<h1>欢迎使用超级曲库!</h1>
+<p th:inline="text">微博用户[[${uid}]]</p>
 <p><a href="/logout">退出登录</a></p>
+
+<h2>音乐搜索</h2>
+<form method="GET" action="/song/search">
+    <input type="text" placeholder="歌曲/歌手名" name="query"/><br/>
+    <input type="submit" value="搜索"/>
+</form>
+
 </body>
 </html>
