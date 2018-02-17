@@ -26,7 +26,7 @@ public class AlbumController {
         if (provider != null) {
             MusicApi api = MusicApiFactory.create(provider);
             if (api != null) {
-                Album album = api.getAlbumInfoByIdSync(albumId);
+                Album album = api.getAlbumInfoByIdSync(albumId, true);
                 map.addAttribute("album", album);
             }
         }
