@@ -31,10 +31,7 @@ public class UploadController {
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
         } else {
-            final File UPLOADED_FOLDER = FileUtils.getUploadDir();
-            if (!UPLOADED_FOLDER.exists()) {
-                UPLOADED_FOLDER.mkdirs();
-            }
+            final File UPLOADED_FOLDER = FileUtils.getUploadDir(true);
             try {
                 // Get the file and save it somewhere
                 byte[] bytes = file.getBytes();

@@ -12,11 +12,23 @@ public class FileUtils {
         return dir;
     }
 
-    public static File getStorageDirectory() {
+    private static File getStorageDirectory() {
         return new File(getRootDirectory(), "storage");
     }
 
-    public static File getUploadDir() {
-        return new File(getStorageDirectory(), "upload");
+    public static File getUploadDir(boolean mkdirs) {
+        File dir = new File(getStorageDirectory(), "upload");
+        if (mkdirs && !dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    public static File getDownloadDir(boolean mkdirs) {
+        File dir = new File(getStorageDirectory(), "download");
+        if (mkdirs && !dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
     }
 }

@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="@{${query}+' - 搜索结果'}"></title>
+</head>
 <body>
 
 <h1>歌曲搜索结果</h1>
@@ -12,7 +16,11 @@
         专辑: <a th:href="@{'/album/' + ${song.getMusicProvider()?.name()} + '/'+ ${song.getAlbum()?.getAlbumId()}}"
                th:text="${song.getAlbum()?.getName()}"></a>
         来源: <span th:text="${song.getMusicProvider()?.toString()}"></span>
+        歌曲ID: <span th:text="${song.getSongId()}"></span>
         链接: <a th:href="${song.getMusicLink()?.getUrl()}" target="_blank">播放</a>
+        操作: <a
+            th:href="@{'/cloud/download/'+${song.getMusicProvider()?.name()}+'/'+${song.getAlbum()?.getAlbumId()}+'/'+${song.getSongId()}}"
+            target="_blank">保存到云盘</a>
     </li>
 </ol>
 

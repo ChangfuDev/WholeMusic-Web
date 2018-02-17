@@ -34,6 +34,7 @@ public class SongController {
             }
         }
         map.addAttribute("songs", result);
+        map.addAttribute("query", query);
         return "song/search";
     }
 }
