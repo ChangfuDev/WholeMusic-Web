@@ -9,7 +9,6 @@ import wholemusic.core.api.MusicApi;
 import wholemusic.core.api.MusicApiFactory;
 import wholemusic.core.api.MusicProvider;
 import wholemusic.core.api.NotFullyImplementedMusicApi;
-import wholemusic.core.model.MusicLink;
 import wholemusic.core.model.Song;
 
 import java.io.IOException;
@@ -36,23 +35,5 @@ public class SongController {
         }
         map.addAttribute("songs", result);
         return "song/search";
-    }
-
-    /**
-     * TODO
-     *
-     * @param musicId
-     * @param provider
-     * @param map
-     * @return
-     * @throws IOException
-     */
-    @GetMapping("/play")
-    public String play(@RequestParam("id") String musicId, @RequestParam("provider") String provider, ModelMap map)
-            throws IOException {
-        MusicProvider musicProvider = MusicProvider.valueOf(provider);
-        MusicApi api = MusicApiFactory.create(musicProvider);
-        MusicLink link = api.getMusicLinkByIdSync(musicId);
-        return "song/play";
     }
 }

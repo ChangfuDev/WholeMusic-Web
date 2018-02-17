@@ -2,10 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<h1>歌曲搜索结果</h1>
+<h1>专辑信息</h1>
 
 <ol>
-    <li th:each="song,itemStat:${songs}">
+    <li th:each="song,itemStat:${album.getSongs()}">
         <!--<span th:text="${itemStat.index}"></span>-->
         歌曲: <span th:text="${song.getName()}"></span>
         歌手: <span th:text="${song.getArtists().get(0).name}"></span>
