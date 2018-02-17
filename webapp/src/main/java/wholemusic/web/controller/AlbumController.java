@@ -20,7 +20,7 @@ import java.io.IOException;
 @SuppressWarnings("unused")
 public class AlbumController {
     @GetMapping("/{providerName}/{albumId}")
-    public String search(@PathVariable("providerName") String providerName, @PathVariable("albumId") String albumId,
+    public String detail(@PathVariable("providerName") String providerName, @PathVariable("albumId") String albumId,
                          ModelMap map) throws IOException {
         MusicProvider provider = MusicProvider.valueOf(providerName);
         if (provider != null) {
