@@ -15,6 +15,7 @@ public class LogoutController extends ControllerWithSession {
     @GetMapping()
     public String logout() {
         session.removeAttribute(SessionKey.WEIBO_AUTH_INFO);
+        session.removeAttribute(SessionKey.USER_INFO);
         return "redirect:/";
     }
 }

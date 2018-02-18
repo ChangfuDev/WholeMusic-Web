@@ -5,7 +5,8 @@ package wholemusic.web.controller;
  */
 
 import org.springframework.beans.factory.annotation.Autowired;
-import wholemusic.web.util.AccountHelper;
+import wholemusic.web.model.domain.User;
+import wholemusic.web.util.WeiboAccountHelper;
 
 import javax.servlet.http.HttpSession;
 
@@ -14,6 +15,10 @@ public class ControllerWithSession {
     protected HttpSession session;
 
     protected boolean isLoggedOn() {
-        return AccountHelper.isLoggedOn(session);
+        return WeiboAccountHelper.getCurrentUser(session) != null;
+    }
+
+    protected User getCurrentUser() {
+        return WeiboAccountHelper.getCurrentUser(session);
     }
 }

@@ -1,5 +1,7 @@
 package wholemusic.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +12,10 @@ import wholemusic.core.api.MusicApiFactory;
 import wholemusic.core.api.MusicProvider;
 import wholemusic.core.api.NotFullyImplementedMusicApi;
 import wholemusic.core.model.Song;
+import wholemusic.web.model.domain.Action;
+import wholemusic.web.model.repository.ActionRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +27,13 @@ import java.util.List;
 @RequestMapping("/song")
 @SuppressWarnings("unused")
 public class SongController {
+
+    @Autowired
+    private ActionRepository actionRepository;
+
     @GetMapping("/search")
-    public String search(@RequestParam("query") String query, ModelMap map) throws IOException {
+    public String search(@RequestParam("query") String query, HttpServletRequest request, ModelMap map) throws
+            IOException {
         ArrayList<Song> result = new ArrayList<>();
         MusicProvider[] providers = MusicProvider.values();
         for (MusicProvider provider : providers) {
@@ -35,6 +45,11 @@ public class SongController {
         }
         map.addAttribute("songs", result);
         map.addAttribute("query", query);
+        JSONObject json = new JSONObject();
+        json.put("query", query);
+        json.put("result", result);
+        Action action = Action.create(request, "search", json.toJSONString());
+        actionRepository.save(action);
         return "song/search";
     }
 }

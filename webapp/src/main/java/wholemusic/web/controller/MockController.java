@@ -1,9 +1,14 @@
 package wholemusic.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import wholemusic.web.util.AccountHelper;
+import wholemusic.web.model.domain.Action;
+import wholemusic.web.model.domain.User;
+import wholemusic.web.model.repository.ActionRepository;
+import wholemusic.web.model.repository.UserRepository;
+import wholemusic.web.util.WeiboAccountHelper;
 import wholemusic.web.util.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,10 +20,20 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/mock/")
 @SuppressWarnings("unused")
 public class MockController extends ControllerWithSession {
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ActionRepository actionRepository;
+
     @GetMapping("login")
     public String login(HttpServletRequest request) {
         if (CommonUtils.isRequestedByLocalHost(request)) {
-            AccountHelper.onWeiboLoggedOn(session, "fake_access_token", "88888888");
+            //noinspection SpellCheckingInspection
+            User user = OAuthCallbackController.tryCreateUser(userRepository, request, null,
+                    WeiboAccountHelper.FAKE_WEIBO_UID);
+            WeiboAccountHelper.onWeiboLoggedOn(session, "fake_access_token", user);
+            Action action = OAuthCallbackController.createLoginAction(request, user);
+            actionRepository.save(action);
         }
         return "redirect:/";
     }

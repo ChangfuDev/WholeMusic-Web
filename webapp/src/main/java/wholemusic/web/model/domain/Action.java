@@ -3,6 +3,7 @@ package wholemusic.web.model.domain;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,17 +15,18 @@ public class Action implements Serializable {
     private Long id;
 
     private String ip;
-    private long timestamp;
     private Date time;
     private String action;
     private String json;
 
+    /**
+     * 默认构造函数是必须的
+     */
     public Action() {
     }
 
-    public Action(String ip, long timestamp, Date time, String action, String json) {
+    public Action(String ip, Date time, String action, String json) {
         this.ip = ip;
-        this.timestamp = timestamp;
         this.time = time;
         this.action = action;
         this.json = json;
@@ -44,14 +46,6 @@ public class Action implements Serializable {
 
     public void setIp(String ip) {
         this.ip = ip;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public Date getTime() {
@@ -76,5 +70,9 @@ public class Action implements Serializable {
 
     public void setJson(String json) {
         this.json = json;
+    }
+
+    public static Action create(HttpServletRequest request, String action, String json) {
+        return new Action(request.getRemoteAddr(), new Date(), action, json);
     }
 }

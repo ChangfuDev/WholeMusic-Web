@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import wholemusic.web.config.SessionKey;
 import wholemusic.web.model.WeiboAuthInfo;
-import wholemusic.web.util.AccountHelper;
+import wholemusic.web.model.domain.User;
+import wholemusic.web.util.WeiboAccountHelper;
 import wholemusic.web.util.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +23,11 @@ public class IndexController extends ControllerWithSession {
     public String index(ModelMap map, HttpServletRequest request) {
         if (isLoggedOn()) {
             // 已登录
+            //noinspection SpellCheckingInspection
             WeiboAuthInfo auth = (WeiboAuthInfo) session.getAttribute(SessionKey.WEIBO_AUTH_INFO);
-            map.addAttribute("uid", auth.uid);
+            User user = getCurrentUser();
+            map.addAttribute("nickname", user.getNickname());
+            map.addAttribute("weibo_uid", auth.uid);
             return "index";
         } else {
             // 未登录
@@ -33,7 +37,7 @@ public class IndexController extends ControllerWithSession {
                 loginLink = "/mock/login";
                 linkText = "模拟登录";
             } else {
-                loginLink = AccountHelper.getWeiboLoginLink();
+                loginLink = WeiboAccountHelper.getWeiboLoginLink();
                 linkText = "微博登录";
             }
             map.addAttribute("login_link", loginLink);
