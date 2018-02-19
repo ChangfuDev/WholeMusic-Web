@@ -13,14 +13,15 @@
 
 <ol>
     <li th:each="song,itemStat:${musics}">
-        <!--<span th:text="${itemStat.index}"></span>-->
         歌曲: <span th:text="${song.getName()}"></span>
         <!--歌手: <span th:text="${song.getArtists().get(0).name}"></span>-->
         专辑: <a th:href="@{'/album/' + ${song.getMusicProvider()?.name()} + '/'+ ${song.getAlbum()?.getAlbumId()}}"
                th:text="${song.getAlbum()?.getName()}"></a>
         来源: <span th:text="${song.getMusicProvider()?.toString()}"></span>
         歌曲ID: <span th:text="${song.getSongId()}"></span>
-        <!--本地链接: <a th:href="${song.getMusicLink()?.getUrl()}" target="_blank">播放</a>-->
+        下载: <a
+            th:href="@{'/disk/'+${song.getMusicProvider()?.name()}+'/'+${song.getAlbum()?.getAlbumId()}+'/'+${song.getSongId()}}"
+            target="_blank">点击下载</a>
     </li>
 </ol>
 
