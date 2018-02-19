@@ -6,6 +6,7 @@ import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
 import org.apache.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +16,16 @@ import wholemusic.core.api.HttpEngine;
 import wholemusic.core.api.MusicApi;
 import wholemusic.core.api.MusicApiFactory;
 import wholemusic.core.api.MusicProvider;
-import wholemusic.core.model.Album;
 import wholemusic.core.model.Song;
 import wholemusic.core.util.CommonUtils;
 import wholemusic.core.util.SongUtils;
+import wholemusic.web.model.domain.Album;
+import wholemusic.web.model.domain.Music;
+import wholemusic.web.model.domain.UniqueHelper;
+import wholemusic.web.model.domain.User;
+import wholemusic.web.model.repository.AlbumRepository;
+import wholemusic.web.model.repository.MusicRepository;
+import wholemusic.web.model.repository.UserRepository;
 import wholemusic.web.util.FileUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,59 +40,104 @@ import java.util.Objects;
 @Controller
 @RequestMapping("/cloud")
 @SuppressWarnings("unused")
-public class CloudController {
+public class CloudController extends ControllerWithSession {
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private MusicRepository musicRepository;
+    @Autowired
+    private AlbumRepository albumRepository;
+
     @GetMapping("/download/{providerName}/{albumId}/{songId}")
     public String downloadSong(@PathVariable("providerName") String providerName, @PathVariable("albumId") String
-            albumId,
-                               @PathVariable("songId") String songId, HttpServletRequest request,
-                               ModelMap map) throws IOException {
-        MusicProvider provider = MusicProvider.valueOf(providerName);
-        if (provider != null) {
-            MusicApi api = MusicApiFactory.create(provider);
-            if (api != null) {
-                Album album = api.getAlbumInfoByIdSync(albumId, true);
-                List<? extends Song> songs = album.getSongs();
-                for (Song song : songs) {
-                    if (Objects.equals(song.getSongId(), songId)) {
-                        downloadSongBlocked(album, song);
-                        map.addAttribute("message",
-                                "You successfully downloaded '" + song.getName() + "'");
-                        break;
+            albumId, @PathVariable("songId") String songId, HttpServletRequest request, ModelMap map) throws
+            IOException {
+        User user = getCurrentUser();
+        if (user != null) {
+            MusicProvider provider = MusicProvider.valueOf(providerName);
+            if (provider != null) {
+                MusicApi api = MusicApiFactory.create(provider);
+                if (api != null) {
+                    wholemusic.core.model.Album album = api.getAlbumInfoByIdSync(albumId, true);
+                    List<? extends Song> songs = album.getSongs();
+                    User dbUser = UniqueHelper.getUniqueUser(userRepository, user);
+                    Album albumExample = Album.fromAlbumInterface(album);
+                    Album dbAlbum = UniqueHelper.getUniqueAlbum(albumRepository, albumExample);
+                    if (dbAlbum == null) {
+                        dbAlbum = albumRepository.save(albumExample);
+                    }
+                    for (Song song : songs) {
+                        if (Objects.equals(song.getSongId(), songId)) {
+                            Music musicExample = Music.fromSongInterface(song);
+                            Music dbMusic = UniqueHelper.getUniqueMusic(musicRepository, musicExample);
+                            final String message;
+                            if (dbMusic == null) {
+                                downloadSongBlocked(dbUser, dbAlbum, song);
+                                message = "You successfully downloaded '" + song.getName() + "'";
+                            } else {
+                                // TODO: add into user
+                                message = "You successfully saved '" + song.getName() + "'";
+                            }
+                            map.addAttribute("message", message);
+                            break;
+                        }
                     }
                 }
             }
+            return "cloud/download/status";
+        } else {
+            return "redirect:/";
         }
-        return "cloud/download/status";
     }
 
     @GetMapping("/download/{providerName}/{albumId}")
     public String downloadAlbum(@PathVariable("providerName") String providerName,
                                 @PathVariable("albumId") String albumId, HttpServletRequest request, ModelMap map)
             throws IOException {
-        MusicProvider provider = MusicProvider.valueOf(providerName);
-        if (provider != null) {
-            MusicApi api = MusicApiFactory.create(provider);
-            if (api != null) {
-                Album album = api.getAlbumInfoByIdSync(albumId, true);
-                List<? extends Song> songs = album.getSongs();
-                int successCount = 0;
-                int failedCount = 0;
-                for (Song song : songs) {
-                    final boolean result = downloadSongBlocked(album, song);
-                    if (result) {
-                        successCount++;
-                    } else {
-                        failedCount++;
+        User user = getCurrentUser();
+        if (user != null) {
+            MusicProvider provider = MusicProvider.valueOf(providerName);
+            if (provider != null) {
+                MusicApi api = MusicApiFactory.create(provider);
+                if (api != null) {
+                    wholemusic.core.model.Album album = api.getAlbumInfoByIdSync(albumId, true);
+                    List<? extends Song> songs = album.getSongs();
+                    int successCount = 0;
+                    int failedCount = 0;
+                    int alreadyExistedCount = 0;
+                    User dbUser = UniqueHelper.getUniqueUser(userRepository, user);
+                    Album dbAlbum = Album.fromAlbumInterface(album);
+                    if (UniqueHelper.getUniqueAlbum(albumRepository, dbAlbum) == null) {
+                        dbAlbum = albumRepository.save(dbAlbum);
                     }
+                    for (Song song : songs) {
+                        Music musicExample = Music.fromSongInterface(song);
+                        Music dbMusic = UniqueHelper.getUniqueMusic(musicRepository, musicExample);
+                        if (dbMusic == null) {
+                            // TODO: song param ?
+                            final boolean result = downloadSongBlocked(dbUser, dbAlbum, song);
+                            if (result) {
+                                successCount++;
+                            } else {
+                                failedCount++;
+                            }
+                        } else {
+                            // TODO: add into user
+                            alreadyExistedCount++;
+                        }
+                    }
+                    final String message = alreadyExistedCount + " already existed, " + successCount + " successfully" +
+                            " downloaded, " + failedCount + " failed.";
+                    map.addAttribute("message", message);
                 }
-                final String message = successCount + " successfully downloaded, " + failedCount + " failed.";
-                map.addAttribute("message", message);
             }
+            return "cloud/download/status";
+        } else {
+            return "redirect:/";
         }
-        return "cloud/download/status";
     }
 
-    private static boolean downloadSongBlocked(Album album, Song song) throws IOException {
+    private boolean downloadSongBlocked(User dbUser, Album dbAlbum, Song song) throws IOException {
         Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(HttpUrl.parse(song.getMusicLink().getUrl()));
         requestBuilder.get();
@@ -104,8 +156,16 @@ public class CloudController {
             BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
             sink.writeAll(response.body().source());
             sink.close();
+            updateMusicAndUser(dbUser, dbAlbum, song);
             return true;
         }
         return false;
+    }
+
+    private void updateMusicAndUser(User dbUser, Album dbAlbum, Song song) {
+        Music music = Music.fromSongInterface(song);
+        music.setAlbum(dbAlbum);
+        dbUser.addMusic(music);
+        userRepository.save(dbUser);
     }
 }

@@ -8,7 +8,6 @@ import wholemusic.web.model.WeiboAuthInfo;
 import wholemusic.web.model.domain.User;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,22 +32,10 @@ public class WeiboAccountHelper {
         return weibo;
     }
 
-    public static User getCurrentUser(HttpSession session) {
-        Object user = session.getAttribute(SessionKey.USER_INFO);
-        if (user instanceof User) {
-            return (User) user;
-        } else {
-            return null;
-        }
-    }
-
     @SuppressWarnings("SpellCheckingInspection")
     public static void onWeiboLoggedOn(HttpSession session, String accessToken, User user) {
-        WeiboAuthInfo auth = new WeiboAuthInfo();
-        auth.accessToken = accessToken;
-        auth.uid = user.getWeiboUid();
-        session.setAttribute(SessionKey.WEIBO_AUTH_INFO, auth);
-        session.setAttribute(SessionKey.USER_INFO, user);
+        session.setAttribute(SessionKey.WEIBO_ACCESS_TOKEN, accessToken);
+        session.setAttribute(SessionKey.WEIBO_UID, user.getWeiboUid());
     }
 
     public static boolean isAdminUser(User user) {

@@ -25,11 +25,11 @@ public class Action implements Serializable {
     public Action() {
     }
 
-    public Action(String ip, Date time, String action, String json) {
+    public Action(String ip, String action, String json) {
         this.ip = ip;
-        this.time = time;
         this.action = action;
         this.json = json;
+        this.time = new Date();
     }
 
     public Long getId() {
@@ -73,6 +73,6 @@ public class Action implements Serializable {
     }
 
     public static Action create(HttpServletRequest request, String action, String json) {
-        return new Action(request.getRemoteAddr(), new Date(), action, json);
+        return new Action(request.getRemoteAddr(), action, json);
     }
 }

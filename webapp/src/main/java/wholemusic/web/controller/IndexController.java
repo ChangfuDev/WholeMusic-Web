@@ -4,11 +4,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import wholemusic.web.config.SessionKey;
-import wholemusic.web.model.WeiboAuthInfo;
 import wholemusic.web.model.domain.User;
-import wholemusic.web.util.WeiboAccountHelper;
 import wholemusic.web.util.CommonUtils;
+import wholemusic.web.util.WeiboAccountHelper;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,13 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 public class IndexController extends ControllerWithSession {
     @GetMapping
     public String index(ModelMap map, HttpServletRequest request) {
-        if (isLoggedOn()) {
+        User user = getCurrentUser();
+        if (user != null) {
             // 已登录
             //noinspection SpellCheckingInspection
-            WeiboAuthInfo auth = (WeiboAuthInfo) session.getAttribute(SessionKey.WEIBO_AUTH_INFO);
-            User user = getCurrentUser();
             map.addAttribute("nickname", user.getNickname());
-            map.addAttribute("weibo_uid", auth.uid);
+            map.addAttribute("weibo_uid", user.getWeiboUid());
             return "index";
         } else {
             // 未登录

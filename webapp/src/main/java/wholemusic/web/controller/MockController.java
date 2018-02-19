@@ -1,7 +1,9 @@
 package wholemusic.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import wholemusic.web.model.domain.Action;
@@ -26,7 +28,8 @@ public class MockController extends ControllerWithSession {
     private ActionRepository actionRepository;
 
     @GetMapping("login")
-    public String login(HttpServletRequest request) {
+    @Transactional
+    public String login(HttpServletRequest request) throws JsonProcessingException {
         if (CommonUtils.isRequestedByLocalHost(request)) {
             //noinspection SpellCheckingInspection
             User user = OAuthCallbackController.tryCreateUser(userRepository, request, null,

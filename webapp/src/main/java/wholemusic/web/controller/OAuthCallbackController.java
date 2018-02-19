@@ -4,20 +4,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.belerweb.social.bean.Result;
 import com.belerweb.social.weibo.api.Weibo;
 import com.belerweb.social.weibo.bean.AccessToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
+import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import wholemusic.web.model.domain.Action;
+import wholemusic.web.model.domain.UniqueHelper;
 import wholemusic.web.model.domain.User;
 import wholemusic.web.model.repository.ActionRepository;
 import wholemusic.web.model.repository.UserRepository;
 import wholemusic.web.util.WeiboAccountHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * Created by haohua on 2018/2/15.
@@ -33,7 +36,8 @@ public class OAuthCallbackController extends ControllerWithSession {
 
     @SuppressWarnings("SpellCheckingInspection")
     @GetMapping("/weibo")
-    public String weibo(@RequestParam("code") String code, HttpServletRequest request) {
+    @Transactional
+    public String weibo(@RequestParam("code") String code, HttpServletRequest request) throws JsonProcessingException {
         Weibo weibo = WeiboAccountHelper.getWeibo();
         Result<AccessToken> tokenResult = weibo.getOAuth2().accessToken(code);
         final boolean tokenSuccess = tokenResult.success();
@@ -48,23 +52,22 @@ public class OAuthCallbackController extends ControllerWithSession {
         return "redirect:/";
     }
 
-    static Action createLoginAction(HttpServletRequest request, User user) {
-        JSONObject json = new JSONObject();
-        json.put("user", user);
+    static Action createLoginAction(HttpServletRequest request, User user) throws JsonProcessingException {
+        String json = new ObjectMapper().writeValueAsString(user);
         //noinspection SpellCheckingInspection
-        Action action = Action.create(request, "weiboLogin", json.toJSONString());
+        Action action = Action.create(request, "weiboLogin", json);
         return action;
     }
 
     static User tryCreateUser(UserRepository userRepository, HttpServletRequest request,
                               Weibo weibo, @SuppressWarnings("SpellCheckingInspection") String weiboUid) {
-        List<User> foundUsers = userRepository.findAll(Example.of(new User(weiboUid, null, null)));
-        if (foundUsers.size() == 0) {
+        User existedUser = UniqueHelper.getUniqueUserByWeiboId(userRepository, weiboUid);
+        if (existedUser == null) {
             final String screenName = fetchWeiboScreenName(weibo, weiboUid);
             User user = new User(weiboUid, screenName, request.getRemoteAddr());
             return userRepository.save(user);
         } else {
-            return foundUsers.get(0);
+            return existedUser;
         }
     }
 

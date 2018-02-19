@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -18,7 +20,9 @@ public class User implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
+
     @SuppressWarnings("SpellCheckingInspection")
+    @Column(unique = true)
     private String weiboUid;
     private String nickname;
 
@@ -26,6 +30,8 @@ public class User implements Serializable {
     @JoinTable(name = "user_music")
     @JsonIgnore
     private Set<Music> musics;
+
+    private Date time;
 
     /**
      * 注册时的ip地址
@@ -42,6 +48,7 @@ public class User implements Serializable {
         this.weiboUid = weiboUid;
         this.nickname = nickname;
         this.ip = ip;
+        this.time = new Date();
     }
 
     public Long getId() {
@@ -89,5 +96,21 @@ public class User implements Serializable {
 
     public void setMusics(Set<Music> musics) {
         this.musics = musics;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public void addMusic(Music music) {
+        if (musics == null) {
+            musics = new HashSet<>();
+        }
+        // add operation will be handled by org.hibernate.collection.internal.PersistentSet
+        musics.add(music);
     }
 }

@@ -9,19 +9,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wholemusic.web.model.domain.Action;
-import wholemusic.web.model.domain.Album;
-import wholemusic.web.model.domain.Music;
-import wholemusic.web.model.domain.User;
+import wholemusic.web.model.domain.*;
 import wholemusic.web.model.repository.ActionRepository;
 import wholemusic.web.model.repository.AlbumRepository;
 import wholemusic.web.model.repository.MusicRepository;
 import wholemusic.web.model.repository.UserRepository;
+import wholemusic.web.util.CommonUtils;
 import wholemusic.web.util.WeiboAccountHelper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.util.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -79,20 +78,11 @@ public class AdminController extends ControllerWithSession {
         }
     }
 
-    @GetMapping("/testCreate")
-    public User testCreate() {
+    @GetMapping("/getMusic/{id}")
+    public Music getMusic(@PathVariable Long id) {
         User user = getCurrentUser();
         if (WeiboAccountHelper.isAdminUser(user)) {
-            Music music1 = new Music();
-            music1.setName("1.歌曲1");
-            Music music2 = new Music();
-            music2.setName("1.歌曲2");
-            HashSet<Music> musics = new HashSet<>();
-            musics.add(music1);
-            musics.add(music2);
-            user.setMusics(musics);
-            userRepository.save(user);
-            return null;
+            return musicRepository.findOne(id);
         } else {
             return null;
         }
@@ -106,5 +96,57 @@ public class AdminController extends ControllerWithSession {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    @GetMapping("/getAlbum/{id}")
+    public Album getAlbum(@PathVariable Long id) {
+        User user = getCurrentUser();
+        if (WeiboAccountHelper.isAdminUser(user)) {
+            return albumRepository.findOne(id);
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping("/info")
+    public HashMap<String, Object> info(HttpServletRequest request) {
+        User user = getCurrentUser();
+        HashMap<String, Object> map = new HashMap<>();
+        if (WeiboAccountHelper.isAdminUser(user)) {
+            map.put("disk", getDiskUsageInfoMap());
+            map.put("runtime", getRuntimeInfoMap());
+            map.put("request", CommonUtils.getRequestInfoMap(request));
+            map.put("session_info", getSessionInfo(session));
+        }
+        return map;
+    }
+
+    private static HashMap<String, Object> getSessionInfo(HttpSession session) {
+        HashMap<String, Object> map = new HashMap<>();
+        Enumeration<String> names = session.getAttributeNames();
+        while (names.hasMoreElements()) {
+            final String name = names.nextElement();
+            map.put(name, session.getAttribute(name));
+        }
+        return map;
+    }
+
+    private static HashMap<String, Object> getRuntimeInfoMap() {
+        HashMap<String, Object> map = new HashMap<>();
+        Runtime runtime = Runtime.getRuntime();
+        map.put("free_memory", CommonUtils.humanReadableByteCount(runtime.freeMemory()));
+        map.put("total_memory", CommonUtils.humanReadableByteCount(runtime.totalMemory()));
+        map.put("max_memory", CommonUtils.humanReadableByteCount(runtime.maxMemory()));
+        map.put("available_processors", runtime.availableProcessors());
+        return map;
+    }
+
+    private static HashMap<String, Object> getDiskUsageInfoMap() {
+        HashMap<String, Object> map = new HashMap<>();
+        File dir = new File(".");
+        map.put("total_space", CommonUtils.humanReadableByteCount(dir.getTotalSpace()));
+        map.put("free_space", CommonUtils.humanReadableByteCount(dir.getFreeSpace()));
+        map.put("usable_space", CommonUtils.humanReadableByteCount(dir.getUsableSpace()));
+        return map;
     }
 }

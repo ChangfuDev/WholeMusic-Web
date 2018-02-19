@@ -7,7 +7,8 @@
 <body>
 <h1>欢迎使用超级曲库!</h1>
 <p th:inline="text">欢迎: [[${nickname}]]([[${weibo_uid}]])</p>
-<p><a href="/logout">退出登录</a></p>
+<p><a href="/home">个人音乐主页</a> <a th:href="@{'http://weibo.com/u/'+${weibo_uid}}">微博主页</a> <a href="/logout">退出登录</a>
+</p>
 
 <h2>音乐搜索</h2>
 <form method="GET" action="/song/search">

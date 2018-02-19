@@ -4,8 +4,16 @@ package wholemusic.web.model.domain;
  * Created by haohua on 2018/2/13.
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import wholemusic.core.api.MusicProvider;
+import wholemusic.core.model.Song;
+import wholemusic.core.util.TextUtils;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,12 +25,18 @@ public class Music implements Serializable {
     @GeneratedValue
     private Long id;
     private String provider;
-    @ManyToOne
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("musics")
     private Album album;
+
     private String songId;
     private String name;
 
+    private Date time;
+
     @ManyToMany(mappedBy = "musics", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<User> users;
 
     /**
@@ -30,6 +44,7 @@ public class Music implements Serializable {
      */
     public Music() {
     }
+
 
     public Long getId() {
         return id;
@@ -61,5 +76,46 @@ public class Music implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public static Music fromSongInterface(Song song) {
+        Music music = new Music();
+        music.setName(song.getName());
+        music.setSongId(song.getSongId());
+        music.setProvider(song.getMusicProvider().name());
+        music.setTime(new Date());
+        return music;
+    }
+
+    public String getSongId() {
+        return songId;
+    }
+
+    public void setSongId(String songId) {
+        this.songId = songId;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public MusicProvider getMusicProvider() {
+        if (!TextUtils.isEmpty(provider)) {
+            return MusicProvider.valueOf(provider);
+        } else {
+            return null;
+        }
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 }

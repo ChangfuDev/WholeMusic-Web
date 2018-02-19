@@ -4,11 +4,15 @@ package wholemusic.web.model.domain;
  * Created by haohua on 2018/2/13.
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"album_id"}))
 @SuppressWarnings("unused")
 public class Album implements Serializable {
 
@@ -17,10 +21,15 @@ public class Album implements Serializable {
     @GeneratedValue
     private Long id;
     private String provider;
+
+    @Column(name = "album_id")
     private String albumId;
     private String name;
 
+    private Date time;
+
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("album")
     private Set<Music> musics;
 
     /**
@@ -51,5 +60,38 @@ public class Album implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public static Album fromAlbumInterface(wholemusic.core.model.Album album) {
+        Album result = new Album();
+        result.setName(album.getName());
+        result.setAlbumId(album.getAlbumId());
+        result.setProvider(album.getMusicProvider().name());
+        result.setTime(new Date());
+        return result;
+    }
+
+    public String getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(String albumId) {
+        this.albumId = albumId;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 }

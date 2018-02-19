@@ -14,8 +14,9 @@ import wholemusic.web.config.SessionKey;
 public class LogoutController extends ControllerWithSession {
     @GetMapping()
     public String logout() {
-        session.removeAttribute(SessionKey.WEIBO_AUTH_INFO);
-        session.removeAttribute(SessionKey.USER_INFO);
+        session.invalidate();
+//        session.removeAttribute(SessionKey.WEIBO_ACCESS_TOKEN);
+//        session.removeAttribute(SessionKey.USER_INFO);
         return "redirect:/";
     }
 }
