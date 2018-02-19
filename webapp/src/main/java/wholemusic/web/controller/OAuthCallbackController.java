@@ -1,15 +1,12 @@
 package wholemusic.web.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.belerweb.social.bean.Result;
 import com.belerweb.social.weibo.api.Weibo;
 import com.belerweb.social.weibo.bean.AccessToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +33,6 @@ public class OAuthCallbackController extends ControllerWithSession {
 
     @SuppressWarnings("SpellCheckingInspection")
     @GetMapping("/weibo")
-    @Transactional
     public String weibo(@RequestParam("code") String code, HttpServletRequest request) throws JsonProcessingException {
         Weibo weibo = WeiboAccountHelper.getWeibo();
         Result<AccessToken> tokenResult = weibo.getOAuth2().accessToken(code);

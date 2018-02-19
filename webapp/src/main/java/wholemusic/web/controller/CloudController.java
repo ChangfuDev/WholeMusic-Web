@@ -138,6 +138,16 @@ public class CloudController extends ControllerWithSession {
     }
 
     private boolean downloadSongBlocked(User dbUser, Album dbAlbum, Song song) throws IOException {
+        File downloadDir = FileUtils.getDownloadDir(true);
+        String path = SongUtils.generateSongPath(song);
+        File downloadedFile = new File(downloadDir, path);
+        if (downloadedFile.exists()) {
+            // a strange thing, db not exist but file exist
+            System.out.println("File already exists, only need update db. Path = " + downloadedFile.getAbsolutePath());
+            // TODO: log
+            updateMusicAndUser(dbUser, dbAlbum, song);
+            return true;
+        }
         Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(HttpUrl.parse(song.getMusicLink().getUrl()));
         requestBuilder.get();
@@ -146,16 +156,15 @@ public class CloudController extends ControllerWithSession {
         Response response = HttpEngine.requestSync(requestBuilder.build());
         if (response.code() == HttpStatus.SC_OK
                 && response.body().contentType().type().toLowerCase().startsWith("audio")) {
-            File downloadDir = FileUtils.getDownloadDir(true);
-            String path = SongUtils.generateSongPath(song);
-            File downloadedFile = new File(downloadDir, path);
+            File downloadTempFile = new File(downloadDir, path + ".tmp");
             File parentDir = downloadedFile.getParentFile();
             if (!parentDir.exists()) {
                 parentDir.mkdirs();
             }
-            BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+            BufferedSink sink = Okio.buffer(Okio.sink(downloadTempFile));
             sink.writeAll(response.body().source());
             sink.close();
+            org.apache.commons.io.FileUtils.moveFile(downloadTempFile, downloadedFile);
             updateMusicAndUser(dbUser, dbAlbum, song);
             return true;
         }

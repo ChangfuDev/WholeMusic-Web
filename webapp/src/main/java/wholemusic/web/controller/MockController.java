@@ -3,15 +3,14 @@ package wholemusic.web.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import wholemusic.web.model.domain.Action;
 import wholemusic.web.model.domain.User;
 import wholemusic.web.model.repository.ActionRepository;
 import wholemusic.web.model.repository.UserRepository;
-import wholemusic.web.util.WeiboAccountHelper;
 import wholemusic.web.util.CommonUtils;
+import wholemusic.web.util.WeiboAccountHelper;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +27,6 @@ public class MockController extends ControllerWithSession {
     private ActionRepository actionRepository;
 
     @GetMapping("login")
-    @Transactional
     public String login(HttpServletRequest request) throws JsonProcessingException {
         if (CommonUtils.isRequestedByLocalHost(request)) {
             //noinspection SpellCheckingInspection
