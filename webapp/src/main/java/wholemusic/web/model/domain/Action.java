@@ -3,6 +3,7 @@ package wholemusic.web.model.domain;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +18,7 @@ public class Action implements Serializable {
     private String ip;
     private Date time;
     private String action;
+    @Lob
     private String json;
 
     /**
