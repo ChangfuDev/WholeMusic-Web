@@ -30,6 +30,7 @@ public class Music implements Serializable {
     @JsonIgnoreProperties("musics")
     private Album album;
 
+    @Column(unique = true)
     private String songId;
     private String name;
 

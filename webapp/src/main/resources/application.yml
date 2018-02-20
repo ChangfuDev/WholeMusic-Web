@@ -1,18 +1,13 @@
-### 配置实用哪种模式
 spring:
   thymeleaf:
     cache: false
   profiles:
     active: dev
-### 配置数据库的连接方式
-#  datasource:
-#    driver-class-name: org.sqlite.JDBC
-#    url: "jdbc:sqlite:app.db"
-#    username:
-#    password:
-### sqlite需要自己配置连接方式
+  h2:
+    console:
+      enabled: true
   jpa:
-    database-platform: com.enigmabridge.hibernate.dialect.SQLiteDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     show-sql: true

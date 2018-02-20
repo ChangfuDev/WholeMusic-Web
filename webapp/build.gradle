@@ -19,8 +19,7 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test")
 
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compile 'org.xerial:sqlite-jdbc:3.8.11.2'
-    compile 'com.enigmabridge:hibernate4-sqlite-dialect:0.1.2'
+    compile 'com.h2database:h2:1.4.196'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '1.5.4.RELEASE'
     // https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc
     compile group: 'org.springframework.session', name: 'spring-session-jdbc', version: '2.0.1.RELEASE'

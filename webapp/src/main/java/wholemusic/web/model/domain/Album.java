@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"album_id"}))
 @SuppressWarnings("unused")
 public class Album implements Serializable {
 
@@ -22,7 +21,7 @@ public class Album implements Serializable {
     private Long id;
     private String provider;
 
-    @Column(name = "album_id")
+    @Column(name = "album_id", unique = true)
     private String albumId;
     private String name;
 

@@ -6,6 +6,7 @@ import com.belerweb.social.weibo.bean.AccessToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 @SuppressWarnings("unused")
 public class OAuthCallbackController extends ControllerWithSession {
     @Autowired
+    private Environment env;
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private ActionRepository actionRepository;
@@ -34,7 +37,7 @@ public class OAuthCallbackController extends ControllerWithSession {
     @SuppressWarnings("SpellCheckingInspection")
     @GetMapping("/weibo")
     public String weibo(@RequestParam("code") String code, HttpServletRequest request) throws JsonProcessingException {
-        Weibo weibo = WeiboAccountHelper.getWeibo();
+        Weibo weibo = WeiboAccountHelper.getWeibo(env);
         Result<AccessToken> tokenResult = weibo.getOAuth2().accessToken(code);
         final boolean tokenSuccess = tokenResult.success();
         if (tokenSuccess) {

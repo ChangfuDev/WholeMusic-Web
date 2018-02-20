@@ -1,2 +1,4 @@
 /build
 /storage
+/*.mv.db
+/*.trace.db
