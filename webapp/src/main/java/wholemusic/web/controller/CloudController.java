@@ -56,7 +56,7 @@ public class CloudController extends ControllerWithSession {
     public String downloadSong(@PathVariable("providerName") String providerName, @PathVariable("albumId") String
             albumId, @PathVariable("songId") String songId, HttpServletRequest request, ModelMap map) throws
             IOException {
-        logger.debug("downloadSong");
+        logger.info("downloadSong");
         User user = getCurrentUser();
         if (user != null) {
             MusicProvider provider = MusicProvider.valueOf(providerName);
@@ -96,7 +96,7 @@ public class CloudController extends ControllerWithSession {
     public String downloadAlbum(@PathVariable("providerName") String providerName,
                                 @PathVariable("albumId") String albumId, HttpServletRequest request, ModelMap map)
             throws IOException {
-        logger.debug("downloadAlbum");
+        logger.info("downloadAlbum");
         User user = getCurrentUser();
         if (user != null) {
             MusicProvider provider = MusicProvider.valueOf(providerName);
@@ -144,7 +144,7 @@ public class CloudController extends ControllerWithSession {
         File downloadedFile = new File(downloadDir, path);
         if (downloadedFile.exists()) {
             // a strange thing, db not exist but file exist
-            logger.debug("File already exists, only need update db. Path = {0}", downloadedFile);
+            logger.info("File already exists, only need update db. Path = {}", downloadedFile);
             updateMusicAndUser(dbUser, dbAlbum, song);
             return true;
         }
@@ -154,7 +154,7 @@ public class CloudController extends ControllerWithSession {
         // TODO: 网易云音乐海外下载不到
         requestBuilder.addHeader("X-REAL-IP", CommonUtils.generateChinaRandomIP());
         Response response = HttpEngine.requestSync(requestBuilder.build());
-        logger.debug("start downloading music, url: {0}, path: {1}", song.getMusicLink().getUrl(), downloadedFile);
+        logger.info("start downloading music, url: {}, path: {}", song.getMusicLink().getUrl(), downloadedFile);
         if (response.code() == HttpStatus.SC_OK
                 && response.body().contentType().type().toLowerCase().startsWith("audio")) {
             File downloadTempFile = new File(downloadDir, path + ".tmp");
