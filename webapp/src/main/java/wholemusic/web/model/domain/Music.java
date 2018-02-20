@@ -18,6 +18,7 @@ import java.util.Set;
 
 @Entity
 @SuppressWarnings("unused")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"provider", "song_id"}))
 public class Music implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,7 +31,7 @@ public class Music implements Serializable {
     @JsonIgnoreProperties("musics")
     private Album album;
 
-    @Column(unique = true)
+    @Column(name = "song_id")
     private String songId;
     private String name;
 

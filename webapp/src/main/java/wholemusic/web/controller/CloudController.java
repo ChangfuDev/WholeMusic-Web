@@ -6,6 +6,8 @@ import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -41,6 +43,8 @@ import java.util.Objects;
 @RequestMapping("/cloud")
 @SuppressWarnings("unused")
 public class CloudController extends ControllerWithSession {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -52,6 +56,7 @@ public class CloudController extends ControllerWithSession {
     public String downloadSong(@PathVariable("providerName") String providerName, @PathVariable("albumId") String
             albumId, @PathVariable("songId") String songId, HttpServletRequest request, ModelMap map) throws
             IOException {
+        logger.debug("downloadSong");
         User user = getCurrentUser();
         if (user != null) {
             MusicProvider provider = MusicProvider.valueOf(providerName);
@@ -62,10 +67,7 @@ public class CloudController extends ControllerWithSession {
                     List<? extends Song> songs = album.getSongs();
                     User dbUser = UniqueHelper.getUniqueUser(userRepository, user);
                     Album albumExample = Album.fromAlbumInterface(album);
-                    Album dbAlbum = UniqueHelper.getUniqueAlbum(albumRepository, albumExample);
-                    if (dbAlbum == null) {
-                        dbAlbum = albumRepository.save(albumExample);
-                    }
+                    Album dbAlbum = UniqueHelper.insertOrGetUniqueAlbum(albumRepository, albumExample);
                     for (Song song : songs) {
                         if (Objects.equals(song.getSongId(), songId)) {
                             Music musicExample = Music.fromSongInterface(song);
@@ -94,6 +96,7 @@ public class CloudController extends ControllerWithSession {
     public String downloadAlbum(@PathVariable("providerName") String providerName,
                                 @PathVariable("albumId") String albumId, HttpServletRequest request, ModelMap map)
             throws IOException {
+        logger.debug("downloadAlbum");
         User user = getCurrentUser();
         if (user != null) {
             MusicProvider provider = MusicProvider.valueOf(providerName);
@@ -106,10 +109,8 @@ public class CloudController extends ControllerWithSession {
                     int failedCount = 0;
                     int alreadyExistedCount = 0;
                     User dbUser = UniqueHelper.getUniqueUser(userRepository, user);
-                    Album dbAlbum = Album.fromAlbumInterface(album);
-                    if (UniqueHelper.getUniqueAlbum(albumRepository, dbAlbum) == null) {
-                        dbAlbum = albumRepository.save(dbAlbum);
-                    }
+                    Album albumExample = Album.fromAlbumInterface(album);
+                    Album dbAlbum = UniqueHelper.insertOrGetUniqueAlbum(albumRepository, albumExample);
                     for (Song song : songs) {
                         Music musicExample = Music.fromSongInterface(song);
                         Music dbMusic = UniqueHelper.getUniqueMusic(musicRepository, musicExample);
@@ -143,8 +144,7 @@ public class CloudController extends ControllerWithSession {
         File downloadedFile = new File(downloadDir, path);
         if (downloadedFile.exists()) {
             // a strange thing, db not exist but file exist
-            System.out.println("File already exists, only need update db. Path = " + downloadedFile.getAbsolutePath());
-            // TODO: log
+            logger.debug("File already exists, only need update db. Path = {0}", downloadedFile);
             updateMusicAndUser(dbUser, dbAlbum, song);
             return true;
         }
@@ -154,6 +154,7 @@ public class CloudController extends ControllerWithSession {
         // TODO: 网易云音乐海外下载不到
         requestBuilder.addHeader("X-REAL-IP", CommonUtils.generateChinaRandomIP());
         Response response = HttpEngine.requestSync(requestBuilder.build());
+        logger.debug("start downloading music, url: {0}, path: {1}", song.getMusicLink().getUrl(), downloadedFile);
         if (response.code() == HttpStatus.SC_OK
                 && response.body().contentType().type().toLowerCase().startsWith("audio")) {
             File downloadTempFile = new File(downloadDir, path + ".tmp");

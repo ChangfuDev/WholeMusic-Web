@@ -13,6 +13,7 @@ import java.util.Set;
 
 @Entity
 @SuppressWarnings("unused")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"provider", "album_id"}))
 public class Album implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -21,7 +22,7 @@ public class Album implements Serializable {
     private Long id;
     private String provider;
 
-    @Column(name = "album_id", unique = true)
+    @Column(name = "album_id")
     private String albumId;
     private String name;
 
