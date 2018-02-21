@@ -67,6 +67,7 @@ public class AdminDiskController extends ControllerWithSession {
                 } else {
                     // 文件
                     HttpHeaders headers = new HttpHeaders();
+                    // TODO: dynamic file type
                     headers.setContentType(MediaType.valueOf(MediaUtils.CONTENT_TYPE_MPA));
                     FileSystemResource fileSystemResource = new FileSystemResource(target);
                     return new ResponseEntity<>(fileSystemResource, headers, HttpStatus.OK);
