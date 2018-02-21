@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${path}"></title>
+</head>
+<body>
+
+<h1>Directory Index</h1>
+
+<ul>
+    <li th:each="file,itemStat:${files}">
+        <!--<span th:text="${itemStat.index}"></span>-->
+        <a th:href="@{'/admin/disk/'+${file.getRelativePath()}}" th:text="${file.name}"></a>
+    </li>
+</ul>
+
+</body>
+</html>

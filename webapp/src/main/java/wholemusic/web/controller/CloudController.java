@@ -154,7 +154,7 @@ public class CloudController extends ControllerWithSession {
         // TODO: 网易云音乐海外下载不到
         requestBuilder.addHeader("X-REAL-IP", CommonUtils.generateChinaRandomIP());
         Response response = HttpEngine.requestSync(requestBuilder.build());
-        logger.info("start downloading music, url: {}, path: {}", song.getMusicLink().getUrl(), downloadedFile);
+        logger.info("downloading: {}", downloadedFile);
         if (response.code() == HttpStatus.SC_OK
                 && response.body().contentType().type().toLowerCase().startsWith("audio")) {
             File downloadTempFile = new File(downloadDir, path + ".tmp");
