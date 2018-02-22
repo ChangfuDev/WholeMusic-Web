@@ -2,28 +2,16 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <link href="/css/style.css" rel="stylesheet" type="text/css"/>
     <title>超级曲库</title>
 </head>
 <body>
-<h1>个人主页</h1>
-<p th:inline="text">欢迎: [[${nickname}]]([[${weibo_uid}]])</p>
-<p><a href="/logout">退出登录</a></p>
+<h1 class='head'>个人主页</h1>
+<div><span th:inline="text">欢迎: [[${nickname}]]([[${weibo_uid}]])</span> <a href="/logout">退出登录</a></div>
 
 <h2>音乐云盘列表</h2>
 
-<ol>
-    <li th:each="song,itemStat:${musics}">
-        歌曲: <span th:text="${song.getName()}"></span>
-        <!--歌手: <span th:text="${song.getArtists().get(0).name}"></span>-->
-        专辑: <a th:href="@{'/album/' + ${song.getMusicProvider()?.name()} + '/'+ ${song.getAlbum()?.getAlbumId()}}"
-               th:text="${song.getAlbum()?.getName()}"></a>
-        来源: <span th:text="${song.getMusicProvider()?.toString()}"></span>
-        歌曲ID: <span th:text="${song.getSongId()}"></span>
-        下载: <a
-            th:href="@{'/disk/'+${song.getMusicProvider()?.name()}+'/'+${song.getAlbum()?.getAlbumId()}+'/'+${song.getSongId()}}"
-            target="_blank">点击下载</a>
-    </li>
-</ol>
+<div th:replace="common/song_table(songs=${musics},isCloudDisk=true)"></div>
 
 </body>
 </html>

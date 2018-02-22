@@ -1,0 +1,95 @@
+* {
+font-size: 12px;
+margin: 0;
+padding: 0;
+font-family: Tahoma, Geneva, sans-serif;
+}
+h1{
+font-size: 24px;
+color: #FFFFFF;
+}
+h2{
+font-size: 16px;
+margin: 5px;
+}
+.head {
+padding: 5px;
+background-color: #C00000;
+}
+div{
+margin: 5px;
+}
+tr{
+background-color: #DDEEFF;
+}
+
+table{
+margin: 5px;
+}
+table, td, th{
+  padding-left: 6px;
+  padding-top: 1px;
+  padding-right: 6px;
+  padding-bottom: 1px;
+border: 1px solid #FF6666;
+border-collapse: collapse;
+text-align: center;
+}
+td {
+  text-overflow: ellipsis;
+  max-width: 300px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+input[type='checkbox']{
+vertical-align: middle;
+}
+.shortinput {
+width: 56px;
+height: 20px;
+}
+.longinput{
+width: 96px;
+height: 20px;
+}
+.longlonginput{
+width: 146px;
+height: 20px;
+}
+.textarea{
+width: 146px;
+height: 80px;
+}
+.longselect{
+width: 150px;
+height: 24px;
+}
+.button{
+width: 150px;
+height: 28px;
+}
+p a{
+font-size: 16px;
+}
+.color1{
+color: #FF0000;
+}
+.color2{
+color: #0000FF;
+}
+.hightlight{
+background-color: #FFFFFC;
+}
+.summary{
+background-color: #FFF0F0;
+}
+.biggreen{
+color: #5050FF;
+font-weight: bold;
+font-size: 22px;
+}
+.bigred{
+color: #FF5050;
+font-weight: bold;
+font-size: 22px;
+}
