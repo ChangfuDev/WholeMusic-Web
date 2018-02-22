@@ -8,8 +8,8 @@
         <th th:unless="${isCloudDisk}">操 作</th>
     </tr>
     <tr th:each="song,itemStat:${songs}">
-        <td><span th:text="${song.getName()}"></span></td>
-        <td th:unless="${isCloudDisk}"><span th:text="${song.getArtists().get(0).name}"></span></td>
+        <td class="song_name"><span th:text="${song.getName()}" th:title="${song.getName()}"></span></td>
+        <td th:unless="${isCloudDisk}"><span th:text="${song.getFormattedArtistsString()}"></span></td>
         <td><a th:href="@{'/album/' + ${song.getMusicProvider()?.name()} + '/'+ ${song.getAlbum()?.getAlbumId()}}"
                th:text="${song.getAlbum()?.getName()}" th:title="${song.getAlbum()?.getName()}"></a></td>
         <td><span th:text="${song.getMusicProvider()?.toString()}"></span></td>

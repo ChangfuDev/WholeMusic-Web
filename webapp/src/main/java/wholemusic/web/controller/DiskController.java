@@ -41,7 +41,7 @@ public class DiskController {
                 for (Song song : songs) {
                     if (Objects.equals(song.getSongId(), songId)) {
                         File downloadDir = FileUtils.getDownloadDir(true);
-                        String path = SongUtils.generateSongPath(song);
+                        String path = SongUtils.generateSongPath(album, song);
                         File file = new File(downloadDir, path);
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(MediaType.valueOf(MediaUtils.CONTENT_TYPE_MPA));

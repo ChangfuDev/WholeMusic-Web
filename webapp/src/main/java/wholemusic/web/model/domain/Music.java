@@ -6,14 +6,17 @@ package wholemusic.web.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import wholemusic.core.api.MusicProvider;
 import wholemusic.core.model.Song;
+import wholemusic.core.util.SongUtils;
 import wholemusic.core.util.TextUtils;
+import wholemusic.web.util.FileUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -46,7 +49,6 @@ public class Music implements Serializable {
      */
     public Music() {
     }
-
 
     public Long getId() {
         return id;
@@ -119,5 +121,22 @@ public class Music implements Serializable {
 
     public void setTime(Date time) {
         this.time = time;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(songId).append(provider).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Music)) {
+            return false;
+        }
+        Music o = (Music) obj;
+        return new EqualsBuilder().append(songId, o.songId).append(provider, o.provider).isEquals();
     }
 }

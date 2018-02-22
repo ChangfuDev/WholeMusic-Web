@@ -41,6 +41,9 @@ td {
   overflow: hidden;
   white-space: nowrap;
 }
+.song_name{
+  max-width: 200px;
+}
 input[type='checkbox']{
 vertical-align: middle;
 }

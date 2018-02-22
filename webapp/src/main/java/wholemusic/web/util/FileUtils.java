@@ -1,6 +1,8 @@
 package wholemusic.web.util;
 
 import org.springframework.boot.ApplicationHome;
+import wholemusic.core.model.Song;
+import wholemusic.core.util.SongUtils;
 
 import java.io.File;
 
@@ -30,5 +32,19 @@ public class FileUtils {
             dir.mkdirs();
         }
         return dir;
+    }
+
+    /**
+     * 通过专辑和歌曲对象获得本地音乐文件绝对路径
+     *
+     * @param album
+     * @param song
+     * @return
+     */
+    public static File getDownloadedMusicPath(wholemusic.core.model.Album album, Song song) {
+        File downloadDir = getDownloadDir(true);
+        String path = SongUtils.generateSongPath(album, song);
+        File downloadedFile = new File(downloadDir, path);
+        return downloadedFile;
     }
 }

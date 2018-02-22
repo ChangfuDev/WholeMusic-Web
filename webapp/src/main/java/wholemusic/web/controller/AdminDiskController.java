@@ -5,8 +5,6 @@ package wholemusic.web.controller;
  */
 
 import com.sun.media.jfxmediaimpl.MediaUtils;
-import org.apache.http.client.utils.URIUtils;
-import org.apache.tomcat.util.buf.UriUtil;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.util.UriUtils;
 import wholemusic.web.model.domain.User;
 import wholemusic.web.util.FileUtils;
 import wholemusic.web.util.WeiboAccountHelper;
@@ -42,7 +39,7 @@ public class AdminDiskController extends ControllerWithSession {
         return "redirect:" + PATH_PREFIX + "/";
     }
 
-    @GetMapping({"", "/**"})
+    @GetMapping({"/", "/**"})
     public Object index(HttpServletRequest request, ModelMap map) throws MalformedURLException,
             UnsupportedEncodingException {
         User user = getCurrentUser();
@@ -90,7 +87,11 @@ public class AdminDiskController extends ControllerWithSession {
         }
 
         public String getRelativePath() {
-            return relativeParentDir + "/" + name;
+            String path = relativeParentDir + name;
+            if (isDir) {
+                path += "/";
+            }
+            return path;
         }
     }
 

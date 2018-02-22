@@ -40,6 +40,7 @@ public class HomeController extends ControllerWithSession {
         User user = getCurrentUser();
         if (user != null) {
             map.addAttribute("nickname", user.getNickname());
+            //noinspection SpellCheckingInspection
             map.addAttribute("weibo_uid", user.getWeiboUid());
             User dbUser = UniqueHelper.getUniqueUser(userRepository, user);
             Set<Music> musics = musicRepository.findAllByUsers(dbUser);

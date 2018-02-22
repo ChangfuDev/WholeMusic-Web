@@ -20,7 +20,6 @@ import wholemusic.core.api.MusicApiFactory;
 import wholemusic.core.api.MusicProvider;
 import wholemusic.core.model.Song;
 import wholemusic.core.util.CommonUtils;
-import wholemusic.core.util.SongUtils;
 import wholemusic.web.model.domain.Album;
 import wholemusic.web.model.domain.Music;
 import wholemusic.web.model.domain.UniqueHelper;
@@ -35,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+
 
 /**
  * Created by haohua on 2018/2/17.
@@ -70,15 +70,20 @@ public class CloudController extends ControllerWithSession {
                     Album dbAlbum = UniqueHelper.insertOrGetUniqueAlbum(albumRepository, albumExample);
                     for (Song song : songs) {
                         if (Objects.equals(song.getSongId(), songId)) {
-                            Music musicExample = Music.fromSongInterface(song);
-                            Music dbMusic = UniqueHelper.getUniqueMusic(musicRepository, musicExample);
+                            SongDownloadResult result = tryDownloadSong(dbUser, dbAlbum, album, song);
                             final String message;
-                            if (dbMusic == null) {
-                                downloadSongBlocked(dbUser, dbAlbum, song);
-                                message = "You successfully downloaded '" + song.getName() + "'";
-                            } else {
-                                // TODO: add into user
-                                message = "You successfully saved '" + song.getName() + "'";
+                            switch (result) {
+                                case Successful:
+                                    message = "You successfully downloaded '" + song.getName() + "'";
+                                    break;
+                                case AlreadyExisted:
+                                    message = "You successfully saved '" + song.getName() + "'";
+                                    break;
+                                case Failed:
+                                    message = "Download failed '" + song.getName() + "'";
+                                    break;
+                                default:
+                                    message = "Result unknown";
                             }
                             map.addAttribute("message", message);
                             break;
@@ -112,19 +117,17 @@ public class CloudController extends ControllerWithSession {
                     Album albumExample = Album.fromAlbumInterface(album);
                     Album dbAlbum = UniqueHelper.insertOrGetUniqueAlbum(albumRepository, albumExample);
                     for (Song song : songs) {
-                        Music musicExample = Music.fromSongInterface(song);
-                        Music dbMusic = UniqueHelper.getUniqueMusic(musicRepository, musicExample);
-                        if (dbMusic == null) {
-                            // TODO: song param ?
-                            final boolean result = downloadSongBlocked(dbUser, dbAlbum, song);
-                            if (result) {
-                                successCount++;
-                            } else {
+                        SongDownloadResult downloadResult = tryDownloadSong(dbUser, dbAlbum, album, song);
+                        switch (downloadResult) {
+                            case Failed:
                                 failedCount++;
-                            }
-                        } else {
-                            // TODO: add into user
-                            alreadyExistedCount++;
+                                break;
+                            case Successful:
+                                successCount++;
+                                break;
+                            case AlreadyExisted:
+                                alreadyExistedCount++;
+                                break;
                         }
                     }
                     final String message = alreadyExistedCount + " already existed, " + successCount + " successfully" +
@@ -138,16 +141,9 @@ public class CloudController extends ControllerWithSession {
         }
     }
 
-    private boolean downloadSongBlocked(User dbUser, Album dbAlbum, Song song) throws IOException {
-        File downloadDir = FileUtils.getDownloadDir(true);
-        String path = SongUtils.generateSongPath(song);
-        File downloadedFile = new File(downloadDir, path);
-        if (downloadedFile.exists()) {
-            // a strange thing, db not exist but file exist
-            logger.info("File already exists, only need update db. Path = {}", downloadedFile);
-            updateMusicAndUser(dbUser, dbAlbum, song);
-            return true;
-        }
+    private boolean downloadSongBlocked(User dbUser, Album dbAlbum, wholemusic.core.model.Album album, Song song)
+            throws IOException {
+        File downloadedFile = FileUtils.getDownloadedMusicPath(album, song);
         Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(HttpUrl.parse(song.getMusicLink().getUrl()));
         requestBuilder.get();
@@ -157,7 +153,7 @@ public class CloudController extends ControllerWithSession {
         logger.info("downloading: {}", downloadedFile);
         if (response.code() == HttpStatus.SC_OK
                 && response.body().contentType().type().toLowerCase().startsWith("audio")) {
-            File downloadTempFile = new File(downloadDir, path + ".tmp");
+            File downloadTempFile = new File(downloadedFile.getAbsolutePath() + ".tmp");
             File parentDir = downloadedFile.getParentFile();
             if (!parentDir.exists()) {
                 parentDir.mkdirs();
@@ -177,5 +173,28 @@ public class CloudController extends ControllerWithSession {
         music.setAlbum(dbAlbum);
         dbUser.addMusic(music);
         userRepository.save(dbUser);
+    }
+
+    private enum SongDownloadResult {
+        Successful, AlreadyExisted, Failed
+    }
+
+    private SongDownloadResult tryDownloadSong(User dbUser, Album dbAlbum, wholemusic.core.model.Album album, Song
+            song) throws IOException {
+        Music musicExample = Music.fromSongInterface(song);
+        File targetFile = FileUtils.getDownloadedMusicPath(album, song);
+        Music dbMusic = UniqueHelper.getUniqueMusic(musicRepository, musicExample);
+        if (dbMusic != null && targetFile.exists()) {
+            // 判断数据库项目和文件同时存在的情况下，认为歌曲已经存在
+            logger.info("File already exists, path = {}", targetFile);
+            return SongDownloadResult.AlreadyExisted;
+        } else {
+            final boolean result = downloadSongBlocked(dbUser, dbAlbum, album, song);
+            if (result) {
+                return SongDownloadResult.Successful;
+            } else {
+                return SongDownloadResult.Failed;
+            }
+        }
     }
 }
