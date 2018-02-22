@@ -162,7 +162,6 @@ public class CloudController extends ControllerWithSession {
             sink.writeAll(response.body().source());
             sink.close();
             org.apache.commons.io.FileUtils.moveFile(downloadTempFile, downloadedFile);
-            updateMusicAndUser(dbUser, dbAlbum, song);
             return true;
         }
         return false;
@@ -189,11 +188,18 @@ public class CloudController extends ControllerWithSession {
             logger.info("File already exists, path = {}", targetFile);
             return SongDownloadResult.AlreadyExisted;
         } else {
-            final boolean result = downloadSongBlocked(dbUser, dbAlbum, album, song);
-            if (result) {
-                return SongDownloadResult.Successful;
+            if (targetFile.exists()) {
+                // 文件存在但数据库不存在
+                updateMusicAndUser(dbUser, dbAlbum, song);
+                return SongDownloadResult.AlreadyExisted;
             } else {
-                return SongDownloadResult.Failed;
+                final boolean result = downloadSongBlocked(dbUser, dbAlbum, album, song);
+                updateMusicAndUser(dbUser, dbAlbum, song);
+                if (result) {
+                    return SongDownloadResult.Successful;
+                } else {
+                    return SongDownloadResult.Failed;
+                }
             }
         }
     }
