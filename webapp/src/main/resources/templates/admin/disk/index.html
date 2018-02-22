@@ -8,6 +8,7 @@
 
 <h1>Directory Index</h1>
 
+<div><a th:href="@{'/admin/disk/zip/' + ${path}}">压缩当前文件夹并下载zip包</a></div>
 <ul>
     <li th:each="file,itemStat:${files}">
         <!--<span th:text="${itemStat.index}"></span>-->
