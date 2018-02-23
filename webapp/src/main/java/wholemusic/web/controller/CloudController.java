@@ -9,6 +9,7 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +45,9 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 public class CloudController extends ControllerWithSession {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     private UserRepository userRepository;
@@ -149,7 +153,8 @@ public class CloudController extends ControllerWithSession {
         requestBuilder.get();
         // TODO: 网易云音乐海外下载不到
         requestBuilder.addHeader("X-REAL-IP", CommonUtils.generateChinaRandomIP());
-        Response response = HttpEngine.requestSync(requestBuilder.build());
+        setProxy();
+        Response response = HttpEngine.requestSync(requestBuilder.build(), true);
         logger.info("downloading: {}", downloadedFile);
         if (response.code() == HttpStatus.SC_OK
                 && response.body().contentType().type().toLowerCase().startsWith("audio")) {
@@ -165,6 +170,14 @@ public class CloudController extends ControllerWithSession {
             return true;
         }
         return false;
+    }
+
+    private void setProxy() {
+        String host = env.getProperty("proxy.socks5.host");
+        int port = env.getProperty("proxy.socks5.port", int.class);
+        if (host != null && port > 0) {
+            HttpEngine.setProxy(host, port);
+        }
     }
 
     private void updateMusicAndUser(User dbUser, Album dbAlbum, Song song) {
