@@ -16,7 +16,6 @@ import wholemusic.web.model.domain.Action;
 import wholemusic.web.model.repository.ActionRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +31,18 @@ public class SongController {
     private ActionRepository actionRepository;
 
     @GetMapping("/search")
-    public String search(@RequestParam("query") String query, HttpServletRequest request, ModelMap map) throws
-            IOException {
+    public String search(@RequestParam("query") String query, HttpServletRequest request, ModelMap map) {
         ArrayList<Song> result = new ArrayList<>();
         MusicProvider[] providers = MusicProvider.values();
         for (MusicProvider provider : providers) {
             MusicApi api = MusicApiFactory.create(provider);
             if (api != null && !(api instanceof NotFullyImplementedMusicApi)) {
-                List<? extends Song> songs = api.searchMusicSync(query, 0, true);
-                result.addAll(songs);
+                try {
+                    List<? extends Song> songs = api.searchMusicSync(query, 0, true);
+                    result.addAll(songs);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
         map.addAttribute("songs", result);
