@@ -25,15 +25,16 @@ import java.util.List;
 @Controller
 @RequestMapping("/song")
 @SuppressWarnings("unused")
-public class SongController {
+public class SongController extends ControllerWithSession {
 
     @Autowired
     private ActionRepository actionRepository;
 
     @GetMapping("/search")
     public String search(@RequestParam("query") String query, HttpServletRequest request, ModelMap map) {
+        addUserInfo(map, request);
         ArrayList<Song> result = new ArrayList<>();
-        MusicProvider[] providers = MusicProvider.values();
+        MusicProvider[] providers = getEnabledProviders();
         for (MusicProvider provider : providers) {
             MusicApi api = MusicApiFactory.create(provider);
             if (api != null && !(api instanceof NotFullyImplementedMusicApi)) {
@@ -53,5 +54,9 @@ public class SongController {
         Action action = Action.create(request, "search", json.toJSONString());
         actionRepository.save(action);
         return "song/search";
+    }
+
+    private MusicProvider[] getEnabledProviders() {
+        return MusicProvider.values();
     }
 }

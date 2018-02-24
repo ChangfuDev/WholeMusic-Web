@@ -6,19 +6,11 @@
     <title>超级曲库</title>
 </head>
 <body>
-<h1 class='head'>欢迎使用超级曲库!</h1>
-<div>
-    <span th:inline="text">欢迎: [[${nickname}]]([[${weibo_uid}]])</span>
-    <a href="/home">我的云盘</a>
-    <a th:href="@{'http://weibo.com/u/'+${weibo_uid}}">微博主页</a>
-    <a href="/logout">退出登录</a>
-</div>
+<h1 class='head'>欢迎使用超级曲库</h1>
 
-<h2>音乐搜索</h2>
-<form method="GET" action="/song/search">
-    <input type="text" placeholder="歌曲/歌手名" name="query"/><br/>
-    <input type="submit" value="搜索"/>
-</form>
+<div th:replace="common/user_header"></div>
+
+<div th:replace="common/search_box"></div>
 
 </body>
 </html>
