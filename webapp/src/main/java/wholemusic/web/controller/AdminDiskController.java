@@ -5,10 +5,7 @@ package wholemusic.web.controller;
  */
 
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,7 +61,7 @@ public class AdminDiskController extends ControllerWithSession {
                     HttpHeaders headers = new HttpHeaders();
                     MediaType type = guessMimeType(target);
                     headers.setContentType(type);
-                    headers.setContentDispositionFormData("attachment", target.getName(), StandardCharsets.UTF_8);
+                    headers.setContentDispositionFormData("attachment", target.getName());
                     FileSystemResource fileSystemResource = new FileSystemResource(target);
                     return new ResponseEntity<>(fileSystemResource, headers, HttpStatus.OK);
                 }

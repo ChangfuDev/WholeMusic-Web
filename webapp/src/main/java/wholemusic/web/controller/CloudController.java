@@ -154,7 +154,7 @@ public class CloudController extends ControllerWithSession {
         // TODO: 网易云音乐海外下载不到
         requestBuilder.addHeader("X-REAL-IP", CommonUtils.generateChinaRandomIP());
         setProxy();
-        Response response = HttpEngine.requestSync(requestBuilder.build(), true);
+        Response response = HttpEngine.requestSync(requestBuilder.build(), false);
         logger.info("downloading: {}", downloadedFile);
         if (response.code() == HttpStatus.SC_OK
                 && response.body().contentType().type().toLowerCase().startsWith("audio")) {
@@ -174,7 +174,12 @@ public class CloudController extends ControllerWithSession {
 
     private void setProxy() {
         String host = env.getProperty("proxy.socks5.host");
-        int port = env.getProperty("proxy.socks5.port", int.class);
+        String portStr = env.getProperty("proxy.socks5.port");
+        int port = 0;
+        try {
+            port = Integer.parseInt(portStr);
+        } catch (NumberFormatException ex) {
+        }
         if (host != null && port > 0) {
             HttpEngine.setProxy(host, port);
         }

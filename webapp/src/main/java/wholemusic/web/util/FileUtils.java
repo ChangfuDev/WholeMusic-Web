@@ -1,6 +1,6 @@
 package wholemusic.web.util;
 
-import org.springframework.boot.ApplicationHome;
+import org.springframework.boot.system.ApplicationHome;
 import wholemusic.core.model.Song;
 import wholemusic.core.util.SongUtils;
 

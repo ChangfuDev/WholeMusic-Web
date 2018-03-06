@@ -13,11 +13,12 @@ spring:
     show-sql: true
   session:
     store-type: jdbc
-  http:
+  servlet:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
 # cookie timeout: 5 days
 server:
-  session:
-    timeout: 432000
+  servlet:
+    session:
+      timeout: 432000

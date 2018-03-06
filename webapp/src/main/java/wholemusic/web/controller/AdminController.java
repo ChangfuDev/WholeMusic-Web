@@ -62,7 +62,7 @@ public class AdminController extends ControllerWithSession {
     public User getUser(@PathVariable Long id) {
         User user = getCurrentUser();
         if (WeiboAccountHelper.isAdminUser(user)) {
-            return userRepository.findOne(id);
+            return userRepository.getOne(id);
         } else {
             return null;
         }
@@ -82,7 +82,7 @@ public class AdminController extends ControllerWithSession {
     public Music getMusic(@PathVariable Long id) {
         User user = getCurrentUser();
         if (WeiboAccountHelper.isAdminUser(user)) {
-            return musicRepository.findOne(id);
+            return musicRepository.getOne(id);
         } else {
             return null;
         }
@@ -102,7 +102,7 @@ public class AdminController extends ControllerWithSession {
     public Album getAlbum(@PathVariable Long id) {
         User user = getCurrentUser();
         if (WeiboAccountHelper.isAdminUser(user)) {
-            return albumRepository.findOne(id);
+            return albumRepository.getOne(id);
         } else {
             return null;
         }

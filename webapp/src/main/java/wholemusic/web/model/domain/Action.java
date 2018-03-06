@@ -1,9 +1,6 @@
 package wholemusic.web.model.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
@@ -12,7 +9,7 @@ import java.util.Date;
 @SuppressWarnings("unused")
 public class Action implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String ip;
