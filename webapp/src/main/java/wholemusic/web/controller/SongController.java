@@ -56,7 +56,7 @@ public class SongController extends ControllerWithSession {
         return "song/search";
     }
 
-    private MusicProvider[] getEnabledProviders() {
+    static MusicProvider[] getEnabledProviders() {
         return MusicProvider.values();
     }
 }
