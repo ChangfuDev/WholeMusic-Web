@@ -4,19 +4,26 @@
     <p class="with_margin" th:unless="${isCloudDisk}">&bull; 其他音乐平台可通过链接播放或下载</p>
     <table class='table with_margin'>
         <tr>
+            <th class="no_padding font_size_16">♫</th>
             <th>歌 曲</th>
             <th th:unless="${isCloudDisk}">歌 手</th>
             <th>专 辑</th>
             <th>来 源</th>
+            <th>Bitrate</th>
             <th>链 接</th>
             <th th:unless="${isCloudDisk}">操 作</th>
         </tr>
         <tr th:each="song,itemStat:${songs}">
+            <td class="padding_1"><a th:href="${song.getPicUrl()}"><img class="cover block_img"
+                                                                         th:src="${song.getPicUrl()}"/></a></td>
             <td class="song_name"><span th:text="${song.getName()}" th:title="${song.getName()}"></span></td>
             <td th:unless="${isCloudDisk}"><span th:text="${song.getFormattedArtistsString()}"></span></td>
             <td><a th:href="@{'/album/' + ${song.getMusicProvider()?.name()} + '/'+ ${song.getAlbum()?.getAlbumId()}}"
                    th:text="${song.getAlbum()?.getName()}" th:title="${song.getAlbum()?.getName()}"></a></td>
             <td><span th:text="${song.getMusicProvider()?.toString()}"></span></td>
+            <td><span
+                    th:text="${T(wholemusic.core.util.SongUtils).getReadableBitRate(song.getMusicLink()?.getBitRate())}"></span>
+            </td>
             <td><a th:unless="${isCloudDisk}" th:href="${song.getMusicLink()?.getUrl()}" target="_blank">播放/下载</a>
                 <a th:if="${isCloudDisk}"
                    th:href="@{'/disk/'+${song.getMusicProvider()?.name()}+'/'+${song.getAlbum()?.getAlbumId()}+'/'+${song.getSongId()}}"

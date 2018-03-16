@@ -48,9 +48,21 @@ table, td, th{
   padding-top: 1px;
   padding-right: 6px;
   padding-bottom: 1px;
-border: 1px solid #FF6666;
-border-collapse: collapse;
-text-align: center;
+  border: 1px solid #FF6666;
+  border-collapse: collapse;
+  text-align: center;
+}
+.padding_1 {
+  padding-left: 1px;
+  padding-top: 1px;
+  padding-right: 1px;
+  padding-bottom: 1px;
+}
+.no_padding {
+  padding-left: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
 }
 td {
   text-overflow: ellipsis;
@@ -160,4 +172,15 @@ max-width: 1000px;
   position: absolute;
   right: 0;
   margin-right: 5px;
+}
+.cover {
+  width: 20px;
+  height: 20px;
+}
+.block_img {
+  display: block;
+  margin: 0 auto;
+}
+.font_size_16 {
+  font-size: 16px;
 }
