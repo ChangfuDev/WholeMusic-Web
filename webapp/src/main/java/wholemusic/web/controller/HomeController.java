@@ -1,9 +1,6 @@
 package wholemusic.web.controller;
 
-/**
- * Created by haohua on 2018/2/19.
- */
-
+import freemarker.template.TemplateModelException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,6 +11,7 @@ import wholemusic.web.model.domain.UniqueHelper;
 import wholemusic.web.model.domain.User;
 import wholemusic.web.model.repository.MusicRepository;
 import wholemusic.web.model.repository.UserRepository;
+import wholemusic.web.util.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
@@ -29,13 +27,15 @@ public class HomeController extends ControllerWithSession {
     private MusicRepository musicRepository;
 
     @GetMapping
-    public String index(ModelMap map, HttpServletRequest request) {
+    public String index(ModelMap map, HttpServletRequest request) throws TemplateModelException {
         addUserInfo(map, request);
         User user = getCurrentUser();
         if (user != null) {
             User dbUser = UniqueHelper.getUniqueUser(userRepository, user);
-            Set<Music> musics = musicRepository.findAllByUsers(dbUser);
-            map.put("musics", musics);
+            Set<Music> songs = musicRepository.findAllByUsers(dbUser);
+            CommonUtils.insertStatics(map);
+            map.put("songs", songs);
+            map.put("isCloudDisk", true);
             return "home/index";
         } else {
             return "redirect:/";

@@ -28,7 +28,8 @@ dependencies {
 
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'com.h2database:h2:1.4.196'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
+    // compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
     // https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc
     compile group: 'org.springframework.session', name: 'spring-session-jdbc'
     // https://mvnrepository.com/artifact/org.springframework.session/spring-session-hazelcast

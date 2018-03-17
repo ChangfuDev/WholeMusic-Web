@@ -1,5 +1,5 @@
 spring:
-  thymeleaf:
+  freemarker:
     cache: false
   profiles:
     active: dev

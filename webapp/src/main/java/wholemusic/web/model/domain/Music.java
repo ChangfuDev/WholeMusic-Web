@@ -1,9 +1,5 @@
 package wholemusic.web.model.domain;
 
-/**
- * Created by haohua on 2018/2/13.
- */
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang.builder.EqualsBuilder;

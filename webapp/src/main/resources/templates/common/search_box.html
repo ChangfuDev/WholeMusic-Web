@@ -1,8 +1,0 @@
-<div class="with_margin" xmlns:th="http://www.thymeleaf.org">
-    <form method="GET" action="/song/search">
-        <input type="text" th:value="${query}" class="search_input" title="歌曲和歌手同时输入，可提高匹配程度"
-               placeholder="歌曲/歌手名 例如: Yellow Coldplay" name="query"/><br/>
-        <button th:unless="${query}" type="submit" class="start_search">开始搜索</button>
-        <button th:if="${query}" type="submit" class="start_search">重新搜索</button>
-    </form>
-</div>

@@ -1,5 +1,13 @@
 package wholemusic.web.util;
 
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.ext.beans.BeansWrapperBuilder;
+import freemarker.template.Configuration;
+import freemarker.template.TemplateHashModel;
+import freemarker.template.TemplateModelException;
+import org.springframework.ui.ModelMap;
+import wholemusic.core.util.SongUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -37,5 +45,14 @@ public class CommonUtils {
         String host = request.getHeader("host");
         return Objects.equals(request.getRemoteAddr(), request.getLocalAddr())
                 && host != null && host.contains("localhost");
+    }
+
+    public static void insertStatics(ModelMap map) throws TemplateModelException {
+        BeansWrapper wrapper = new BeansWrapperBuilder(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS).build();
+        TemplateHashModel staticModels = wrapper.getStaticModels();
+        String songUtilsClassName = SongUtils.class.getCanonicalName();
+        TemplateHashModel songUtilsStatics = (TemplateHashModel) staticModels.get(songUtilsClassName);
+        map.put("SongUtils", songUtilsStatics);
+        map.put("String", String.class);
     }
 }

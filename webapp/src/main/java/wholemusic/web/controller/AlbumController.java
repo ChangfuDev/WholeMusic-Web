@@ -1,5 +1,6 @@
 package wholemusic.web.controller;
 
+import freemarker.template.TemplateModelException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,19 +10,19 @@ import wholemusic.core.api.MusicApi;
 import wholemusic.core.api.MusicApiFactory;
 import wholemusic.core.api.MusicProvider;
 import wholemusic.core.model.Album;
+import wholemusic.web.util.CommonUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-/**
- * Created by haohua on 2018/2/17.
- */
 @Controller
 @RequestMapping("/album")
 @SuppressWarnings("unused")
-public class AlbumController {
+public class AlbumController extends ControllerWithSession {
     @GetMapping("/{providerName}/{albumId}")
     public String detail(@PathVariable("providerName") String providerName, @PathVariable("albumId") String albumId,
-                         ModelMap map) throws IOException {
+                         HttpServletRequest request, ModelMap map) throws IOException, TemplateModelException {
+        addUserInfo(map, request);
         MusicProvider provider = MusicProvider.valueOf(providerName);
         if (provider != null) {
             MusicApi api = MusicApiFactory.create(provider);
@@ -30,6 +31,7 @@ public class AlbumController {
                 map.addAttribute("album", album);
             }
         }
+        CommonUtils.insertStatics(map);
         return "album/detail";
     }
 }
